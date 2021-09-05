@@ -6,13 +6,13 @@
 #    By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/20 13:00:20 by ltouret           #+#    #+#              #
-#    Updated: 2021/09/05 00:17:38 by ltouret          ###   ########.fr        #
+#    Updated: 2021/09/05 11:28:40 by ltouret          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = so_long
 
-SRCS = srcs/main.c 
+SRCS = srcs/main.c #srcs/gnl/get_next_line.c
 
 OBJS = ${SRCS:.c=.o}
 
