@@ -19,15 +19,25 @@ int	ft_strlen(char *str)
 }
 */
 
-typedef	struct s_map
+typedef struct s_map
 {
 	char	**map;
 	int		x;
 	int		y;
+}			t_map;
+
+typedef struct s_check
+{
 	int		player;
 	int		exit;
 	int		collec;
-}			t_map;
+}			t_check;
+
+t_check	*get_check(void)
+{
+	static t_check check;
+	return (&check);
+}
 
 t_map	*get_map(void)
 {
@@ -136,17 +146,12 @@ void	add_map(char *buf, t_map *map)
 	map->map = tmp;
 }
 
-void	read_file(int fd)
+void	read_file(int fd, t_map *map)
 {
 	char	*buf;
-	t_map	*map;
 
-	//get init out of here!!!
-	// get the bools player and all into their own struct boolean to check
-	map = get_map();
-	map->map = NULL;
-	map->x = 0;
-	buf = "";
+	buf = get_next_line(fd);
+	add_map(buf, map);
 	while (buf != NULL)
 	{
 		buf = get_next_line(fd);
@@ -156,12 +161,58 @@ void	read_file(int fd)
 	printf("%d\n", map->y);
 }
 
+//  TODO create player object with coordinates
+//  TODO check if map rectangular
+// init check!
+void	check_map(char **map)
+{
+	int		i;
+	int		o;
+	t_check	*check;
+
+	i = 0;
+	check = get_check();
+	check->player = 0;
+	while (map[i])
+	{
+		o = 0;
+		while (map[i][o])
+		{
+			if (map[i][o] == '0' || map[i][o] == '1' || map[i][o] == 'C'
+				|| map[i][o] == 'E' || map[i][o] == 'P')
+			{
+				if (map[i][o] == 'P')
+				{
+					if (check->player == 1)
+						exit (1); // ERR too many player
+					check->player = 1;
+				}
+				if (map[i][o] == 'E')
+					check->exit = 1;
+				if (map[i][o] == 'P')
+					check->collec = 1;
+			}
+			else
+				exit(1); // ERR Random char in map
+			o++;
+		}
+		i++;
+	}
+}
+
 void	parsing(char *filename)
 {
-	int fd;
+	int		fd;
+	t_map	*map;
 
 	fd = open_file(filename);
-	read_file(fd);
+
+	// get init out of here!!!
+	map = get_map();
+	map->map = NULL;
+	map->x = 0;
+	read_file(fd, map);
+	check_map(map->map);
 	// get map into memory
 	// check if map closed
 	// check if only 1 player
