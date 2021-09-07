@@ -5,47 +5,48 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/17 14:31:08 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/05 11:20:14 by ltouret          ###   ########.fr       */
+/*   Created: 2021/09/07 11:45:28 by ltouret           #+#    #+#             */
+/*   Updated: 2021/09/07 11:53:01 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*gnl_strjoin(char const *s1, char const *s2)
+int	ft_strlen(char *str)
 {
-	char	*str;
-	int		i;
-	int		o;
+	int	i;
 
-	if (!s1 || !s2)
-		return (NULL);
-	str = (char *)malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
-	if (str)
-	{
-		i = -1;
-		o = 0;
-		while (s1[++i])
-			str[i] = s1[i];
-		while (s2[o])
-			str[i++] = s2[o++];
-		str[i] = '\0';
-	}
-	free((void *)s1);
-	free((void *)s2);
-	return (str);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
-int	hand_return(char *buff, char **after_nl, int r_eof, char **line)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	*line = str_until_nl(*after_nl);
-	free(buff);
-	free(*after_nl);
-	*after_nl = NULL;
-	buff = NULL;
-	if (r_eof == -1)
-		return (-1);
-	if (**line == '\0' || find_nl(*line) == -1)
-		return (0);
-	return (1);
+	char	*outstr;
+	int		i;
+	int		j;
+
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	outstr = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (outstr == NULL)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (s1[i])
+	{
+		outstr[i] = s1[i];
+		i++;
+	}
+	while (s2[j])
+	{
+		outstr[i] = s2[j];
+		i++;
+		j++;
+	}
+	outstr[i] = '\0';
+	free(s1);
+	return (outstr);
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/04 23:25:39 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/05 11:23:31 by ltouret          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,14 +7,47 @@
 
 //int	panic(int err)
 
+/*
 int	ft_strlen(char *str)
-{
+>{
 	int	i;
 
 	i = 0;
 	while (str[i])
 		i++;
 	return (i);
+}
+*/
+
+typedef	struct s_map
+{
+	char	**map;
+	int		x;
+	int		y;
+	int		player;
+	int		exit;
+	int		collec;
+}			t_map;
+
+t_map	*get_map(void)
+{
+	static t_map map;
+	return (&map);
+}
+
+//deprecated erase after being done
+void	show_map(void)
+{
+	int		i;
+	char	**map;
+
+	i = 0;
+	map = get_map()->map;
+	while (map[i])
+	{
+		printf("%s\n", map[i]);
+		i++;
+	}
 }
 
 void	check_ber(char *filename)
@@ -57,13 +78,82 @@ int	open_file(char *filename)
 	return (fd);
 }
 
+void	*mymalloc(int size)
+{
+	void *out;
+
+	out = malloc(size);
+	if (out == NULL)
+	{
+		// call exit ERR MALL here!
+		return (NULL);
+	}
+	return (out);
+}
+
+char	*ft_strdup(char *str)
+{
+	char	*outstr;
+	int		i;
+
+	if (str == NULL)
+		return (NULL);
+
+	outstr = mymalloc(sizeof(char) * (ft_strlen(str) + 1));
+	i = 0;
+	while (str[i])
+	{
+		outstr[i] = str[i];
+		i++;
+	}
+	outstr[i] = '\0';
+	return (outstr);
+}
+
+void	add_map(char *buf, t_map *map)
+{
+	char	**tmp;
+	int		i;
+
+	if (buf == NULL)
+		return ;
+	i = 0;
+	while (map->map != NULL && map->map[i])
+		i++;
+	tmp = NULL;
+	tmp = mymalloc(sizeof(char *) * (i + 2));
+	i = 0;
+	while (map->map != NULL && map->map[i])
+	{
+		tmp[i] = ft_strdup(map->map[i]);
+		free(map->map[i]);
+		i++;
+	}
+	tmp[i] = buf;
+	tmp[i + 1] = NULL;
+	map->y = i + 1;
+	free(map->map);
+	map->map = tmp;
+}
+
 void	read_file(int fd)
 {
-	char	buf[4];
+	char	*buf;
+	t_map	*map;
 
-	buf[3] = '\0';
-	read(fd, buf, 3);
-	printf("%s\n", buf);
+	//get init out of here!!!
+	// get the bools player and all into their own struct boolean to check
+	map = get_map();
+	map->map = NULL;
+	map->x = 0;
+	buf = "";
+	while (buf != NULL)
+	{
+		buf = get_next_line(fd);
+		add_map(buf, map);
+	}
+	show_map();
+	printf("%d\n", map->y);
 }
 
 void	parsing(char *filename)

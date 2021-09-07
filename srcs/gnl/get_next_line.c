@@ -5,166 +5,113 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/10 18:35:45 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/05 11:18:09 by ltouret          ###   ########.fr       */
+/*   Created: 2021/09/04 23:25:39 by ltouret           #+#    #+#             */
+/*   Updated: 2021/09/07 18:57:33 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <fcntl.h>
 
-int	find_nl(char *s1)
+#define BU 10
+
+static int	find_nl(char *buf)
 {
-	int		i;
+	int	i;
 
-	i = -1;
-	while (s1[++i])
-		if (s1[i] == '\n')
+	i = 0;
+	while (buf[i])
+	{
+		if (buf[i] == '\n')
 			return (i);
+		i++;
+	}
 	return (-1);
 }
 
-char	*str_until_nl(char *buff)
+static char	*ft_substr(char *str, int start, int len)
 {
+	char	*outstr;
 	int		i;
-	int		counter;
-	char	*str;
 
-	i = -1;
-	counter = 0;
-	while (buff[++i] != '\n' && buff[i])
-		counter++;
-	str = (char *)(malloc(sizeof(char) * (counter + 1)));
-	if (str)
-	{
-		i = -1;
-		counter = 0;
-		while (buff[++i] != '\n' && buff[i])
-			str[counter++] = buff[i];
-		str[counter] = '\0';
-		return (str);
-	}
-	return (NULL);
-}
-
-char	*rest_of_str(char *after_nl)
-{
-	char	*str;
-	int		nl;
-	int		o;
-
-	nl = find_nl(after_nl);
-	if (nl == -1)
-	{
-		free(after_nl);
-		return (ft_substr("", 0, 0));
-	}
-	str = (char *)(malloc(sizeof(char) * (ft_strlen(after_nl) - (nl + 1) + 1)));
-	if (!(str))
+	if (str == NULL || start < 0 || len < 0 || ft_strlen(str) < start)
 		return (NULL);
-	o = 0;
-	while (after_nl[++nl])
-		str[o++] = after_nl[nl];
-	str[o] = '\0';
-	free(after_nl);
-	return (str);
-}
-
-int	read_buff(char *buff, char **line, int fd, char **after_nl)
-{
-	int		nl;
-	int		r_eof;
-
-	nl = find_nl(*after_nl);
-	r_eof = BU;
-	while (nl == -1 && r_eof == BU)
+	outstr = malloc(sizeof(char) * (len + 1));
+	if (outstr != NULL)
 	{
-		r_eof = read(fd, buff, BU);
-		if (r_eof != -1)
-			buff[r_eof] = '\0';
-		nl = find_nl(buff);
-		*after_nl = gnl_strjoin(*after_nl, ft_substr(buff, 0, ft_strlen(buff)));
+		i = 0;
+		while (str[start] && i < len)
+		{
+			outstr[i] = str[start];
+			i++;
+			start++;
+		}
+		outstr[i] = '\0';
 	}
-	if (r_eof != BU && find_nl(*after_nl) == -1)
-		return (hand_return(buff, after_nl, r_eof, line));
-	*line = str_until_nl(*after_nl);
-	*after_nl = rest_of_str(*after_nl);
-	free(buff);
-	return (1);
+	return (outstr);
 }
 
-int	get_next_line(int fd, char **line)
+static char	*after_nl(char *line, int nl)
 {
-	static char	*after_nl = NULL;
-	char		*buff;
-	int			rtrn_val;
-	int			w;
+	char	*tmp;
+	int		len;
 
-	rtrn_val = 1;
-	w = -1;
-	if (!after_nl)
-	{
-		after_nl = malloc(sizeof(char) * 1);
-		if (!(after_nl))
-			return (-1);
-		after_nl[0] = '\0';
-	}
-	buff = malloc(sizeof(char) * (BU + 1));
-	if (!(buff) || !line || BU <= 0 || fd < 0)
-		return (-1);
-	while (++w < BU + 1)
-		buff[w] = 0;
-	rtrn_val = read_buff(buff, line, fd, &after_nl);
-	return (rtrn_val);
+	len = ft_strlen(line);
+	if (nl == -1)
+		len = 0;
+	tmp = ft_substr(line, nl + 1, len);
+	free(line);
+	return (tmp);
 }
-/*
-**#include <stdio.h>
-**#include <fcntl.h>
-**
-**int       main(int argc, char **argv)
-**{
-**  int     fd[argc];
-**  int     ret[argc];
-**  char    *str;
-**  int     are_all_files_read;
-**  int     i;
-**
-**  are_all_files_read = 0;
-**  i = 0;
-**  if (argc == 1)
-**  {
-**      while (ret[0])
-**      {
-**          fd[0] = open("/dev/stdin", O_RDONLY);
-**          ret[0] = get_next_line(fd[0], &str);
-**          printf("%d-%s\n", ret[0], str);
-**          free(str);
-**      }
-**  }
-**  while (i < argc - 1)
-**  {
-**      fd[i] = open(argv[i + 1], O_RDONLY);
-**      i++;
-**  }
-**  i = 0;
-**  while (!are_all_files_read)
-**  {
-**      while (i < argc - 1)
-**      {
-**          ret[i] = get_next_line(fd[i], &str);
-**          printf("%d-%s\n", ret[i], str);
-**          free(str);
-**          i++;
-**      }
-**      are_all_files_read = 1;
-**      while (i)
-**      {
-**          i--;
-**          if (ret[i])
-**              are_all_files_read = 0;
-**      }
-**  }
-**  while (1)
-**      ;
-**  return (0);
-**}
-*/
+
+// add outstr = ft_substr(*line, 0, nl + 1); if u want nl included
+// line 93
+
+static char	*read_file(char **line, int fd, char *buf)
+{
+	char		*outstr;
+	int			nl;
+	int			eof;
+
+	nl = -1;
+	eof = BU;
+	outstr = NULL;
+	while (eof == BU && nl == -1)
+	{
+		eof = read(fd, buf, BU);
+		*line = ft_strjoin(*line, buf);
+		if (eof != BU && ft_strlen(*line) == 0)
+		{
+			free(*line);
+			return (NULL);
+		}
+		nl = find_nl(*line);
+	}
+	outstr = ft_substr(*line, 0, nl);
+	*line = after_nl(*line, nl);
+	return (outstr);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*line = NULL;
+	char		*outstr;
+	char		buf[BU + 1];
+	int			i;
+
+	outstr = NULL;
+	i = -1;
+	while (++i < BU + 1)
+		buf[i] = '\0';
+	if (BU <= 0)
+		return (NULL);
+	if (line == NULL)
+	{
+		line = malloc(sizeof(char) * (1));
+		if (line == NULL)
+			return (NULL);
+		line[0] = '\0';
+	}
+	outstr = read_file(&line, fd, buf);
+	return (outstr);
+}
