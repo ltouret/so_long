@@ -164,6 +164,9 @@ void	read_file(int fd, t_map *map)
 //  TODO create player object with coordinates
 //  TODO check if map rectangular
 // init check!
+// if no map segfault! check why!
+// cut in more than 1 func
+// test for more randon rectangle errors
 void	check_map(char **map)
 {
 	int		i;
@@ -173,9 +176,16 @@ void	check_map(char **map)
 	i = 0;
 	check = get_check();
 	check->player = 0;
+	get_map()->x = ft_strlen(map[i]);
+	if (get_map()->x < 3 || get_map()->y < 3)
+			exit (1); // ERR not rectangle
+	if (get_map()->x == get_map()->y)
+			exit (1); // ERR not rectangle
 	while (map[i])
 	{
 		o = 0;
+		if (get_map()->x != ft_strlen(map[i]))
+			exit (1); // ERR not rectangle
 		while (map[i][o])
 		{
 			if (map[i][o] == '0' || map[i][o] == '1' || map[i][o] == 'C'
@@ -184,7 +194,7 @@ void	check_map(char **map)
 				if (map[i][o] == 'P')
 				{
 					if (check->player == 1)
-						exit (1); // ERR too many player
+						exit (1); // ERR too many players
 					check->player = 1;
 				}
 				if (map[i][o] == 'E')
@@ -198,6 +208,8 @@ void	check_map(char **map)
 		}
 		i++;
 	}
+	if (!check->player || !check->collec || !check->exit)
+		exit(1); // ERR missing elem P/C/E
 }
 
 void	parsing(char *filename)
