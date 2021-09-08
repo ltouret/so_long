@@ -5,6 +5,10 @@
 #include "mlx.h"
 #include "gnl/get_next_line.h"
 
+// memset test erase after DIS
+// call mymemset to init my data structs!
+#include <string.h>
+
 //int	panic(int err)
 
 /*
@@ -36,12 +40,16 @@ typedef struct s_check
 t_check	*get_check(void)
 {
 	static t_check check;
+
+	//memset(&check, '\0', sizeof(t_check));
 	return (&check);
 }
 
 t_map	*get_map(void)
 {
 	static t_map map;
+
+	//memset(&map, '\0', sizeof(t_map));
 	return (&map);
 }
 
@@ -53,7 +61,7 @@ void	show_map(void)
 
 	i = 0;
 	map = get_map()->map;
-	while (map[i])
+	while (map != NULL && map[i])
 	{
 		printf("%s\n", map[i]);
 		i++;
@@ -96,6 +104,7 @@ void	*mymalloc(int size)
 	if (out == NULL)
 	{
 		// call exit ERR MALL here!
+		exit(1); // ERR mall here
 		return (NULL);
 	}
 	return (out);
@@ -158,7 +167,7 @@ void	read_file(int fd, t_map *map)
 		add_map(buf, map);
 	}
 	show_map();
-	printf("%d\n", map->y);
+	printf("y: %d\n", map->y);
 }
 
 //  TODO create player object with coordinates
@@ -173,12 +182,14 @@ void	check_map(char **map)
 	int		o;
 	t_check	*check;
 
+	if (get_map()->map == NULL)
+		exit(1); // ERR map empty
 	i = 0;
 	check = get_check();
 	check->player = 0;
 	get_map()->x = ft_strlen(map[i]);
 	if (get_map()->x < 3 || get_map()->y < 3)
-			exit (1); // ERR not rectangle
+			exit (1); // ERR not rectange // ERR if x or y == 2 then map not closed!
 	if (get_map()->x == get_map()->y)
 			exit (1); // ERR not rectangle
 	while (map[i])
@@ -223,6 +234,7 @@ void	parsing(char *filename)
 	map = get_map();
 	map->map = NULL;
 	map->x = 0;
+	map->y = 0; // if pro with y then erase dis
 	read_file(fd, map);
 	check_map(map->map);
 	// get map into memory
