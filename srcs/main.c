@@ -315,41 +315,10 @@ void	check_filename(int argc, char *argv[])
 
 int	main(int argc, char *argv[])
 {
-	//char *filename;
+	char *filename;
 
-	(void) argc;
-	(void) argv;
-	//check_filename(argc, argv);
-	//filename = argv[1];
-	//parsing(filename);
-	int	c = 0;
-	int	len = 1000000;
-			//2147483648
-	int	i = 0;
-	int q = len / 4;
-	int	o = len / 2;
-	int	*arr = mymalloc(sizeof(int) * len);
-
-	printf("%d %d %d\n", o, len, q);
-	while (arr != NULL && i < (len / 2))
-	{
-		arr[i] = 10;
-		//write(1,"X",1);
-		arr[o] = 30;
-		printf("%d %d\n", i, o);
-		o++;
-		i++;
-		c++;
-	}
-	printf("%d\n", c);
-	/*
-	c = 0;
-	while (c < len)
-	{
-		printf("%d\n", arr[c]);
-		c++;
-	}
-	*/
-	(void) arr;
+	check_filename(argc, argv);
+	filename = argv[1];
+	parsing(filename);
 	return (0);
 }
