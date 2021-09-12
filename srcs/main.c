@@ -191,6 +191,8 @@ void	read_file(int fd, t_map *map)
 		buf = get_next_line(fd);
 		add_map(buf, map);
 	}
+	if (map->map == NULL)
+		panic(ERR_MAP_EMPTY); //map empty
 	show_map();
 	printf("y: %d\n", map->y);
 }
@@ -206,8 +208,6 @@ void	check_map(char **map)
 	int		o;
 	t_check	*check;
 
-	if (get_map()->map == NULL)
-		panic(ERR_MAP_EMPTY); //map empty
 	i = 0;
 	check = get_check();
 	check->player = 0;
@@ -244,7 +244,7 @@ void	check_map(char **map)
 		i++;
 	}
 	if (check->player == 0)
-		panic(ERR_MAP_MANY_PLAY);
+		panic(ERR_MAP_NO_PLAY);
 	if (check->collec == 0)
 		panic(ERR_MAP_COLL);
 	if (check->exit == 0)
@@ -254,13 +254,13 @@ void	check_map(char **map)
 // TODO change func name, this gets player coords into player struct only, for now
 // maybe just put it into parsing directly
 // maybe no need to add player pro cos check map already done
+// TODO if check_map checks for empty map before get_data_map | check_map_closed
+// then no need to add empty map protection
 void	get_data_map(char **map)
 {
 	int	i;
 	int	o;
 
-	if (map == NULL)
-		panic(ERR_MAP_EMPTY);
 	i = 0;
 	while (map[i])
 	{
@@ -281,6 +281,29 @@ void	get_data_map(char **map)
 	printf("%f %f\n", get_player()->y, get_player()->x);
 }
 
+void	check_map_closed(char **map)
+{
+	int	i;
+	int	o;
+
+	i = 0;
+	while (map[i])
+	{
+		o = 0;
+		while (map[i][o])
+		{
+			if ((i == 0 || i == get_map()->y - 1)
+				|| (o == 0 || o == get_map()->x - 1))
+			{
+				if (map[i][o] != '1')
+					panic(ERR_MAP_OPEN);
+			}
+			o++;
+		}
+		i++;
+	}
+}
+
 void	parsing(char *filename)
 {
 	int		fd;
@@ -296,12 +319,7 @@ void	parsing(char *filename)
 	read_file(fd, map);
 	check_map(map->map);
 	get_data_map(map->map);
-	// get map into memory // done
-	// check if map closed
-	// check if only 1 player // done
-	// check if not random chars // done
-	// check if 1 exit 1 collectible, starting position // done
-	// check if map is rectangular //done
+	check_map_closed(map->map);
 }
 
 void	check_filename(int argc, char *argv[])
@@ -313,6 +331,45 @@ void	check_filename(int argc, char *argv[])
 	check_ber(argv[1]);
 }
 
+/*
+static void	draw_floor_ceil(t_data *data, t_img **img)
+{
+	int y;
+	int x;
+
+	y = 0;
+	while (y < data->mlx.mlx_hei)
+	{
+		x = 0;
+		while (x < data->mlx.mlx_wid)
+		{
+			(*img)->addr[y * data->mlx.mlx_wid + x] =
+				data->color.f_color;
+			(*img)->addr[(data->mlx.mlx_hei - y - 1) *
+				data->mlx.mlx_wid + x] = data->color.c_color;
+			x++;
+		}
+		y++;
+	}
+}
+*/
+
+typedef struct	s_data {
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+}				t_data;
+
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+{
+	char	*dst;
+
+	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	*(unsigned int*)dst = color;
+}
+
 int	main(int argc, char *argv[])
 {
 	char *filename;
@@ -320,5 +377,72 @@ int	main(int argc, char *argv[])
 	check_filename(argc, argv);
 	filename = argv[1];
 	parsing(filename);
+
+	void	*mlx;
+	void	*mlx_win;
+	char	*relative_path = "./textures/dup.xpm";
+	int		img_width;
+	int		img_height;
+	t_data	img;
+	t_data	mimg;
+
+	mlx = mlx_init();
+	img.img = mlx_xpm_file_to_image(mlx, relative_path, &img_width, &img_height);
+	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
+								&img.endian);
+	if (img.img == NULL)
+		write(1,"X",1);
+	printf("x %d y %d line %d\n", img_width, img_height, img.line_length);
+	mlx_win = mlx_new_window(mlx, 640, 480, "Hello world!");
+	mimg.img = mlx_new_image(mlx, 640, 480);
+	mimg.addr = mlx_get_data_addr(mimg.img, &mimg.bits_per_pixel, &mimg.line_length,
+								&mimg.endian);
+	int y = 0;
+	int	x = 0;
+	while (y < 480)
+	{
+		x = 0;
+		while (x < 640)
+		{
+			my_mlx_pixel_put(&mimg, x, y, 0x009cd3db);
+			if ((((unsigned int *)img.addr)[0] != 0xff000000))
+				printf("%x\n", ((int *)img.addr)[1]);
+			x++;
+		}
+		y++;
+	}
+	//int dst;
+	//dst = (0 * mimg.line_length + 0 * (mimg.bits_per_pixel / 8));
+	//char	*dst;
+	//dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	y = 0;
+	x = 0;
+	while (x < 1024)
+	{
+		//((unsigned int *)mimg.addr)[x] = ((unsigned int *)img.addr)[x];
+		((unsigned int *)mimg.addr)[x] = 0x009cd3db;
+		x++;
+		if (x == 32)
+		{
+			y = x;
+			while (y < 640)
+			{
+				((unsigned int *)mimg.addr)[y] = 0x009cd3db;
+				y++;
+			}
+			break;
+		}
+	}
+	//((int *)mimg.addr)[1] = 0;
+	printf("%x\n", ((int *)img.addr)[39]);
+	mlx_put_image_to_window(mlx, mlx_win, mimg.img, 0, 0);
+	//mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
+	/*
+	img = mlx_xpm_file_to_image(mlx, "./textures/sapo.xpm", &img_width, &img_height);
+	mlx_put_image_to_window(mlx, mlx_win, img, 0, 80);
+	img = mlx_xpm_file_to_image(mlx, "./textures/wall.xpm", &img_width, &img_height);
+	mlx_put_image_to_window(mlx, mlx_win, img, 0, 160);
+	*/
+	while (1);
 	return (0);
 }
