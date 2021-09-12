@@ -1,7 +1,7 @@
 #include "so_long.h"
 
 // memset test erase after DIS
-// call mymemset to init my data structs!
+// call mymemset or bzero to init my data structs!
 #include <string.h>
 
 void	panic(t_error err_code)
@@ -37,17 +37,19 @@ void	panic(t_error err_code)
 	exit(ERR);
 }
 
-/*
-int	ft_strlen(char *str)
->{
-	int	i;
+void	ft_bzero(void *s, size_t n)
+{
+	size_t	i;
+	char	*p;
 
 	i = 0;
-	while (str[i])
+	p = (char *) s;
+	while (i < n)
+	{
+		p[i] = '\0';
 		i++;
-	return (i);
+	}
 }
-*/
 
 // TODO get all of the struct into one big struct data
 // do get_data() with static data, and create init data with memset all to 0
@@ -119,7 +121,7 @@ int	open_file(char *filename)
 	return (fd);
 }
 
-void	*mymalloc(int size)
+void	*mymalloc(size_t size)
 {
 	void *out;
 
@@ -129,6 +131,7 @@ void	*mymalloc(int size)
 		// call exit ERR MALL here!
 		panic(ERR_MALLOC);
 	}
+	ft_bzero(out, size);
 	return (out);
 }
 
@@ -248,6 +251,36 @@ void	check_map(char **map)
 		panic(ERR_MAP_EXIT);
 }
 
+// TODO change func name, this gets player coords into player struct only, for now
+// maybe just put it into parsing directly
+// maybe no need to add player pro cos check map already done
+void	get_data_map(char **map)
+{
+	int	i;
+	int	o;
+
+	if (map == NULL)
+		panic(ERR_MAP_EMPTY);
+	i = 0;
+	while (map[i])
+	{
+		o = 0;
+		while (map[i][o])
+		{
+			if (map[i][o] == 'P')
+			{
+				get_player()->y = i;
+				get_player()->x = o;
+				// erased 'P' of map after getting coords like cub3d, is dis useful???
+				map[i][o] = '0';
+			}
+			o++;
+		}
+		i++;
+	}
+	printf("%f %f\n", get_player()->y, get_player()->x);
+}
+
 void	parsing(char *filename)
 {
 	int		fd;
@@ -259,9 +292,10 @@ void	parsing(char *filename)
 	map = get_map();
 	map->map = NULL;
 	map->x = 0;
-	map->y = 0; // if pro with y then erase dis
+	map->y = 0; // if prob with y then erase dis
 	read_file(fd, map);
 	check_map(map->map);
+	get_data_map(map->map);
 	// get map into memory // done
 	// check if map closed
 	// check if only 1 player // done
@@ -281,10 +315,41 @@ void	check_filename(int argc, char *argv[])
 
 int	main(int argc, char *argv[])
 {
-	char *filename;
+	//char *filename;
 
-	check_filename(argc, argv);
-	filename = argv[1];
-	parsing(filename);
+	(void) argc;
+	(void) argv;
+	//check_filename(argc, argv);
+	//filename = argv[1];
+	//parsing(filename);
+	int	c = 0;
+	int	len = 1000000;
+			//2147483648
+	int	i = 0;
+	int q = len / 4;
+	int	o = len / 2;
+	int	*arr = mymalloc(sizeof(int) * len);
+
+	printf("%d %d %d\n", o, len, q);
+	while (arr != NULL && i < (len / 2))
+	{
+		arr[i] = 10;
+		//write(1,"X",1);
+		arr[o] = 30;
+		printf("%d %d\n", i, o);
+		o++;
+		i++;
+		c++;
+	}
+	printf("%d\n", c);
+	/*
+	c = 0;
+	while (c < len)
+	{
+		printf("%d\n", arr[c]);
+		c++;
+	}
+	*/
+	(void) arr;
 	return (0);
 }
