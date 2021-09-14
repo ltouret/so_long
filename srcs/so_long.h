@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include "mlx.h"
 #include "gnl/get_next_line.h"
 
@@ -51,23 +50,13 @@ typedef struct		s_mlx
 typedef struct		s_img
 {
 	// im even using dis bs? look n erase
+	// same as b4 do i use int or char for addr?
 	void			*img;
 	int				*addr;
 	int				bpp;
 	int				line_length;
 	int				endian;
 }					t_img;
-
-typedef struct s_map
-{
-	// when i create data i erase t_map
-	// send x,y directly to t_mlx
-	// send **map directly to data
-	// x,y long ?
-	char	**map;
-	int		x;
-	int		y;
-}			t_map;
 
 typedef struct s_check
 {
@@ -82,3 +71,23 @@ typedef struct s_player
 	double	x;
 	double	y;
 }			t_player;
+
+typedef struct		s_data
+{
+	t_mlx			mlx;
+	t_player		player;
+	int				map_width;
+	int				map_height;
+	char			**map;
+}					t_data;
+
+void	validate_map(t_data *data);
+void	parsing(int argc, char *argv[], t_data *data);
+// errors
+void	panic(t_error err_code);
+// utils
+void	ft_bzero(void *s, size_t n);
+void	*mymalloc(size_t size);
+char	*ft_strdup(char *str);
+t_data	*get_data(void);
+void	show_map(void);
