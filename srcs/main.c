@@ -11,7 +11,7 @@ void	panic(t_error err_code)
 	if (err_code == ERR_MALLOC)
 		printf("Error : out of memory ... exiting\n");
 	else if (err_code == ERR_MAP_READ)
-		printf("Error : cannot read map ... exiting\n");
+		printf("Error : cannot read map file... exiting\n");
 	else if (err_code == ERR_MAP_OPEN)
 		printf("Error : map is not closed... exiting\n");
 	else if (err_code == ERR_MAP_RECT)
@@ -39,6 +39,8 @@ void	panic(t_error err_code)
 
 void	ft_bzero(void *s, size_t n)
 {
+	// TODO maybe add more than one p[i]
+	// so it bzeros faster!
 	size_t	i;
 	char	*p;
 
@@ -332,36 +334,7 @@ void	check_filename(int argc, char *argv[])
 }
 
 /*
-static void	draw_floor_ceil(t_data *data, t_img **img)
-{
-	int y;
-	int x;
-
-	y = 0;
-	while (y < data->mlx.mlx_hei)
-	{
-		x = 0;
-		while (x < data->mlx.mlx_wid)
-		{
-			(*img)->addr[y * data->mlx.mlx_wid + x] =
-				data->color.f_color;
-			(*img)->addr[(data->mlx.mlx_hei - y - 1) *
-				data->mlx.mlx_wid + x] = data->color.c_color;
-			x++;
-		}
-		y++;
-	}
-}
-*/
-
-typedef struct	s_data {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
-
+// TODO change t_data for t_img
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
 	char	*dst;
@@ -369,18 +342,47 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
 }
+*/
 
 int	main(int argc, char *argv[])
 {
-	char *filename;
+	char	*filename;
+	t_mlx	mlx;
 
+	ft_bzero(&mlx, sizeof(mlx));
 	check_filename(argc, argv);
 	filename = argv[1];
 	parsing(filename);
 
+	// mlx setup
+
+	// added x,y for mlx
+	mlx.mlx_wid = get_map()->x * 32;
+	mlx.mlx_hei = get_map()->y * 32;
+	//printf("%ld %ld\n", mlx.mlx_wid, mlx.mlx_hei);
+
+	// open textures
+	mlx.mlx = mlx_init();
+	mlx.mlx_win = mlx_new_window(mlx.mlx, mlx.mlx_wid, mlx.mlx_hei, "so_long");
+	mlx.up_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/up.xpm", &mlx.up_text.wid, &mlx.up_text.hei);
+	mlx.do_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/down.xpm", &mlx.do_text.wid, &mlx.do_text.hei);
+	mlx.le_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/left.xpm", &mlx.le_text.wid, &mlx.le_text.hei);
+	mlx.ri_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/right.xpm", &mlx.ri_text.wid, &mlx.ri_text.hei);
+	if (mlx.up_text.img == NULL)
+		write(1,"YH\n", 3);
+	if (mlx.do_text.img == NULL)
+		write(1,"YH\n", 3);
+	if (mlx.le_text.img == NULL)
+		write(1,"YH\n", 3);
+	if (mlx.ri_text.img == NULL)
+		write(1,"YH\n", 3);
+
+	while (1);
+
+	/*
 	void	*mlx;
 	void	*mlx_win;
-	char	*relative_path = "./textures/dup.xpm";
+	char	*relative_path = "./textures/up.xpm";
 	int		img_width;
 	int		img_height;
 	t_data	img;
@@ -411,38 +413,23 @@ int	main(int argc, char *argv[])
 		}
 		y++;
 	}
-	//int dst;
-	//dst = (0 * mimg.line_length + 0 * (mimg.bits_per_pixel / 8));
-	//char	*dst;
-	//dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	y = 0;
 	x = 0;
+	// TODO transform dis to use my pixel put!
 	while (x < 1024)
 	{
-		//((unsigned int *)mimg.addr)[x] = ((unsigned int *)img.addr)[x];
-		((unsigned int *)mimg.addr)[x] = 0x009cd3db;
+		if (((unsigned int *)img.addr)[x] != 0xff000000)
+			((unsigned int *)mimg.addr)[y] = ((unsigned int *)img.addr)[x];
 		x++;
-		if (x == 32)
+		y++;
+		if (x % 32 == 0)
 		{
-			y = x;
-			while (y < 640)
-			{
-				((unsigned int *)mimg.addr)[y] = 0x009cd3db;
+			while (y % 640 != 0)
 				y++;
-			}
-			break;
 		}
 	}
-	//((int *)mimg.addr)[1] = 0;
-	printf("%x\n", ((int *)img.addr)[39]);
 	mlx_put_image_to_window(mlx, mlx_win, mimg.img, 0, 0);
-	//mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
-	/*
-	img = mlx_xpm_file_to_image(mlx, "./textures/sapo.xpm", &img_width, &img_height);
-	mlx_put_image_to_window(mlx, mlx_win, img, 0, 80);
-	img = mlx_xpm_file_to_image(mlx, "./textures/wall.xpm", &img_width, &img_height);
-	mlx_put_image_to_window(mlx, mlx_win, img, 0, 160);
-	*/
 	while (1);
+	*/
 	return (0);
 }
