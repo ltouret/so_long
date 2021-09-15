@@ -2,8 +2,6 @@
 
 void	ft_bzero(void *s, size_t n)
 {
-	// TODO maybe add more than one p[i]
-	// so it bzeros faster!
 	size_t	i;
 
 	i = 0;
@@ -16,12 +14,13 @@ void	ft_bzero(void *s, size_t n)
 
 t_data	*get_data(void)
 {
-	// add bool inside data so that first time dis func is called bzero for init?
-	// do get_data() with static data, and create init data with memset all to 0
 	static t_data	data;
-	//if (data.map == NULL)
-	//	ft_bzero(&data, sizeof(t_data));
 
+	if (data.init == 0)
+	{
+		ft_bzero(&data, sizeof(t_data));
+		data.init = 1;
+	}
 	return (&data);
 }
 

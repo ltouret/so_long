@@ -16,7 +16,6 @@ int	main(int argc, char *argv[])
 	t_data	*data;
 
 	data = get_data();
-	ft_bzero(data, sizeof(t_data));
 	parsing(argc, argv, data);
 	validate_map(data);
 	show_map();

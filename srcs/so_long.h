@@ -79,6 +79,7 @@ typedef struct		s_data
 	int				map_width;
 	int				map_height;
 	char			**map;
+	int				init;
 }					t_data;
 
 void	validate_map(t_data *data);
