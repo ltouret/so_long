@@ -28,6 +28,8 @@ void	panic(t_error err_code)
 		printf("Error : no valid argument received... exiting\n");
 	else if (err_code == ERR_ARG_BER)
 		printf("Error : map doesnt end with '.ber'... exiting\n");
+	else if (err_code == ERR_TEXT)
+		printf("Error : textures are missing... exiting\n");
 	else
 		printf("Unknown Error... exiting\n");
 	exit(ERR);

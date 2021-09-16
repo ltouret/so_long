@@ -1,3 +1,6 @@
+#ifndef SO_LONG_H
+# define SO_LONG_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,7 +22,8 @@ typedef enum		e_error
 	ERR_MAP_WCHAR,
 	ERR_MAP_EMPTY,
 	ERR_ARG,
-	ERR_ARG_BER
+	ERR_ARG_BER,
+	ERR_TEXT
 }					t_error;
 
 typedef struct		s_text_img
@@ -29,7 +33,7 @@ typedef struct		s_text_img
 	int				wid;
 	int				hei;
 	int				bpp;
-	int				size;
+	int				line_length;
 	int				endian;
 	void			*img;
 	char			*addr;
@@ -52,7 +56,7 @@ typedef struct		s_img
 	// im even using dis bs? look n erase
 	// same as b4 do i use int or char for addr?
 	void			*img;
-	int				*addr;
+	char			*addr;
 	int				bpp;
 	int				line_length;
 	int				endian;
@@ -92,3 +96,5 @@ void	*mymalloc(size_t size);
 char	*ft_strdup(char *str);
 t_data	*get_data(void);
 void	show_map(void);
+
+#endif

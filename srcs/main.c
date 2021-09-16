@@ -1,15 +1,82 @@
 #include "so_long.h"
 
-/*
 // TODO change t_data for t_img
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_img *data, int x, int y, int color)
 {
 	char	*dst;
 
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	dst = data->addr + (y * data->line_length + x * (data->bpp / 8));
 	*(unsigned int*)dst = color;
 }
-*/
+
+void	mlx_stuff(t_data *data)
+{
+	// mlx setup
+
+	// added x,y for mlx
+	data->mlx.mlx = mlx_init();
+	data->mlx.mlx_wid = data->map_width * 32;
+	data->mlx.mlx_hei = data->map_height * 32;
+	data->mlx.mlx_win = mlx_new_window(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei, "so_long");
+	//printf("%ld %ld\n", data->mlx.mlx_wid, data->mlx.mlx_hei);
+
+	// open textures
+	data->mlx.up_text.img = mlx_xpm_file_to_image(data->mlx.mlx, "./textures/up.xpm", &data->mlx.up_text.wid, &data->mlx.up_text.hei);
+	data->mlx.do_text.img = mlx_xpm_file_to_image(data->mlx.mlx, "./textures/down.xpm", &data->mlx.do_text.wid, &data->mlx.do_text.hei);
+	data->mlx.le_text.img = mlx_xpm_file_to_image(data->mlx.mlx, "./textures/left.xpm", &data->mlx.le_text.wid, &data->mlx.le_text.hei);
+	data->mlx.ri_text.img = mlx_xpm_file_to_image(data->mlx.mlx, "./textures/right.xpm", &data->mlx.ri_text.wid, &data->mlx.ri_text.hei);
+	if (data->mlx.up_text.img == NULL)
+		panic(ERR_TEXT);
+	if (data->mlx.do_text.img == NULL)
+		panic(ERR_TEXT);
+	if (data->mlx.le_text.img == NULL)
+		panic(ERR_TEXT);
+	if (data->mlx.ri_text.img == NULL)
+		panic(ERR_TEXT);
+
+	// testing stuff
+
+	int y = 0;
+	int	x = 0;
+	t_img mimg;
+
+	mimg.img = mlx_new_image(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei);
+	mimg.addr = mlx_get_data_addr(mimg.img, &mimg.bpp, &mimg.line_length,
+								&mimg.endian);
+
+	while (y < data->mlx.mlx_hei)
+	{
+		x = 0;
+		while (x < data->mlx.mlx_wid)
+		{
+			my_mlx_pixel_put(&mimg, x, y, 0x009cd3db);
+			x++;
+		}
+		y++;
+	}
+
+	data->mlx.up_text.addr = mlx_get_data_addr(data->mlx.up_text.img, &data->mlx.up_text.bpp, &data->mlx.up_text.line_length, &data->mlx.up_text.endian);
+	x = 0;
+	y = 0;
+	// TODO transform dis to use my pixel put!
+	/*
+	while (x < 1024)
+	{
+		if (((unsigned int *)data->mlx.up_text.addr)[x] != 0xff000000)
+			((unsigned int *)mimg.addr)[y] = ((unsigned int *)data->mlx.up_text.addr)[x];
+		x++;
+		y++;
+		if (x % 32 == 0)
+		{
+			while (y % data->mlx.mlx_wid != 0)
+				y++;
+		}
+	}
+	*/
+	//mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
+
+	//while (1);
+}
 
 int	main(int argc, char *argv[])
 {
@@ -18,34 +85,8 @@ int	main(int argc, char *argv[])
 	data = get_data();
 	parsing(argc, argv, data);
 	validate_map(data);
-	show_map();
-
-	/*
-	// mlx setup
-
-	// added x,y for mlx
-	mlx.mlx_wid = get_map()->x * 32;
-	mlx.mlx_hei = get_map()->y * 32;
-	//printf("%ld %ld\n", mlx.mlx_wid, mlx.mlx_hei);
-
-	// open textures
-	mlx.mlx = mlx_init();
-	mlx.mlx_win = mlx_new_window(mlx.mlx, mlx.mlx_wid, mlx.mlx_hei, "so_long");
-	mlx.up_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/up.xpm", &mlx.up_text.wid, &mlx.up_text.hei);
-	mlx.do_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/down.xpm", &mlx.do_text.wid, &mlx.do_text.hei);
-	mlx.le_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/left.xpm", &mlx.le_text.wid, &mlx.le_text.hei);
-	mlx.ri_text.img = mlx_xpm_file_to_image(mlx.mlx, "./textures/right.xpm", &mlx.ri_text.wid, &mlx.ri_text.hei);
-	if (mlx.up_text.img == NULL)
-		write(1,"YH\n", 3);
-	if (mlx.do_text.img == NULL)
-		write(1,"YH\n", 3);
-	if (mlx.le_text.img == NULL)
-		write(1,"YH\n", 3);
-	if (mlx.ri_text.img == NULL)
-		write(1,"YH\n", 3);
-
-	while (1);
-	*/
+	//show_map();
+	mlx_stuff(data);
 
 	/*
 	void	*mlx;
@@ -56,7 +97,6 @@ int	main(int argc, char *argv[])
 	t_data	img;
 	t_data	mimg;
 
-	mlx = mlx_init();
 	img.img = mlx_xpm_file_to_image(mlx, relative_path, &img_width, &img_height);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
 								&img.endian);
