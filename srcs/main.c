@@ -69,16 +69,16 @@ void	img_screen(t_data *data, t_img *mimg, int x, int y)
 	int		nx = x + 32;
 	int		ny = y + 32;
 
-	printf("%d %d\n", x, nx);
 	while (y < ny)
 	{
 		x = ox;
+		tx = 0;
 		while (x < nx)
 		{
-			//dst = data->mlx.up_text.addr + (ty * data->mlx.up_text.line_length + tx * (data->mlx.up_text.bpp / 8));
-			//if (*(unsigned int *)dst != 0xff000000)
-				//my_mlx_pixel_put(mimg, x, y, *((unsigned int *)dst));
-				my_mlx_pixel_put(mimg, x, y, 0x00ff0f00);
+			dst = data->mlx.up_text.addr + (ty * data->mlx.up_text.line_length + tx * (data->mlx.up_text.bpp / 8));
+			if (*(unsigned int *)dst != 0xff000000)
+				my_mlx_pixel_put(mimg, x, y, *((unsigned int *)dst));
+				//my_mlx_pixel_put(mimg, x, y, 0x00ff0f00);
 			x++;
 			tx++;
 		}
@@ -125,25 +125,34 @@ void	mlx_stuff(t_data *data)
 
 	/*
 	char	*dst;
-	x = 0;
-	y = 0;
+	(void) dst;
+	x = 10;
+	y = 10;
+	int	ox = x;
+	int	mx = x + 32;
+	int	my = y + 32;
+	int	nx = 0;
+	int	ny = 0;
 
-	while (y < 32)
+	while (y < my)
 	{
-		x = 0;
-		while (x < 32)
+		x = ox;
+		nx = 0;
+		while (x < mx)
 		{
-			dst = data->mlx.up_text.addr + (y * data->mlx.up_text.line_length + x * (data->mlx.up_text.bpp / 8));
+			dst = data->mlx.up_text.addr + (ny * data->mlx.up_text.line_length + nx * (data->mlx.up_text.bpp / 8));
 			if (*(unsigned int *)dst != 0xff000000)
 				my_mlx_pixel_put(&mimg, x, y, *((unsigned int *)dst));
+			nx++;
 			x++;
 		}
 		y++;
+		ny++;
 	}
+	mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
 	*/
-	//mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
 	img_screen(data, &mimg, 10, 10);
-
+	img_screen(data, &mimg, 50, 70);
 	while (1);
 }
 
