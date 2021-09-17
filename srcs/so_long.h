@@ -88,7 +88,7 @@ typedef struct		s_data
 	int				map_width;
 	int				map_height;
 	char			**map;
-	int				keycode[280];
+	int				keys[280];
 	int				init;
 }					t_data;
 

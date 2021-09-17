@@ -103,8 +103,8 @@ int	keypress(int key, t_data *data)
 		// call exit esc key pressed
 		panic(-1);
 	}
-	else if (key < 280)
-		data->keycode[key] = 1;
+	if (key < 280)
+		data->keys[key] = 1;
 	return (OK);
 }
 
@@ -113,45 +113,48 @@ int	keyrelease(int key, t_data *data)
 	(void) data;
 	//printf("%d\n", key);
 	if (key < 280)
-		data->keycode[key] = 0;
+		data->keys[key] = 0;
 	return (OK);
 }
 
-void	mlx_stuff(t_data *data)
+static int		active_key(t_data *data)
 {
-	// mlx setup - mlx init
-	// added x,y for mlx
+	//write(1, "a", 1);
+	// breaks here idk why!!
+	// TODO remmeber to remove the UP/DOWN cos keycode 65000 kills code
+	if (data->keys[KEY_W] || data->keys[KEY_A] || data->keys[KEY_D]
+		|| data->keys[KEY_S])
+		return (OK);
+	return (ERR);
+}
 
-	//TODO check if mlx init != NULL or exit program and return ERR_MLX
-	data->mlx.mlx = mlx_init();
-	data->mlx.mlx_wid = data->map_width * 32;
-	data->mlx.mlx_hei = data->map_height * 32;
-	load_textures(data);
-	load_textures_addr1(data);
-	data->mlx.mlx_win = mlx_new_window(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei, "so_long");
-
-	// Drawing floor
+void	draw_floor(t_data *data, t_img *mimg)
+{
 	int	x = 0;
 	int	y = 0;
-	t_img mimg;
 
-	mimg.img = mlx_new_image(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei);
-	mimg.addr = mlx_get_data_addr(mimg.img, &mimg.bpp, &mimg.line_length,
-								&mimg.endian);
+	mimg->img = mlx_new_image(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei);
+	mimg->addr = mlx_get_data_addr(mimg->img, &mimg->bpp, &mimg->line_length,
+				&mimg->endian);
 
 	while (x < data->mlx.mlx_wid)
 	{
 		y = 0;
 		while (y < data->mlx.mlx_hei)
 		{
-			my_mlx_pixel_put(&mimg, x, y, 0x009cd3db);
+			my_mlx_pixel_put(mimg, x, y, 0x009cd3db);
 			y++;
 		}
 		x++;
 	}
-	// end
+}
 
-	// Drawing map
+void	draw_map(t_data *data, t_img *mimg)
+{
+	int	x;
+	int	y;
+
+	x = 0;
 	y = 0;
 	while (data->map[y])
 	{
@@ -159,24 +162,21 @@ void	mlx_stuff(t_data *data)
 		while (data->map[y][x])
 		{
 			if (data->map[y][x] == '1')
-				img_screen(&data->mlx.wa_text, &mimg, x * 32, y * 32);
+				img_screen(&data->mlx.wa_text, mimg, x * 32, y * 32);
 			else if (data->map[y][x] == 'C')
-				img_screen(&data->mlx.co_text, &mimg, x * 32, y * 32);
+				img_screen(&data->mlx.co_text, mimg, x * 32, y * 32);
 			else if (data->map[y][x] == 'E')
-				img_screen(&data->mlx.ex_text, &mimg, x * 32, y * 32);
-			//else if (data->map[y][x] == 'P')
-			//	img_screen(&data->mlx.up_text, &mimg, x * 32, y * 32);
+				img_screen(&data->mlx.ex_text, mimg, x * 32, y * 32);
 			x++;
 		}
 		y++;
 	}
-	// end
+}
 
-	// Drawing player
-	//printf("%d %d\n", data->player.x, data->player.y);
-	//data->player.x = 1;
-	//data->player.y = 1;
+void	draw_player(t_data *data, t_img *mimg)
+{
 	t_text_img	*player;
+
 	if (data->player.dir == 'u')
 		player = &data->mlx.up_text;
 	else if (data->player.dir == 'd')
@@ -185,15 +185,66 @@ void	mlx_stuff(t_data *data)
 		player = &data->mlx.le_text;
 	else if (data->player.dir == 'r')
 		player = &data->mlx.ri_text;
-	img_screen(player, &mimg, data->player.x * 32, data->player.y * 32);
-	mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
+	img_screen(player, mimg, data->player.x * 32, data->player.y * 32);
+}
 
-	mlx_mouse_hide(data->mlx.mlx, data->mlx.mlx_win);
-	mlx_hook(data->mlx.mlx_win, 2, 1L << 0, keypress, data);
-	mlx_hook(data->mlx.mlx_win, 3, 1L << 1, keyrelease, data);
-	//mlx_hook(data->mlx.mlx_win, 17, 1L << 17, exit_pro, data);
-	mlx_loop_hook(data->mlx.mlx, player_movements, data);
-	mlx_loop(data->mlx.mlx);
+void	mlx_start(t_data *data)
+{
+	//TODO check if mlx init != NULL or exit program and return ERR_MLX
+	data->mlx.mlx = mlx_init();
+	data->mlx.mlx_wid = data->map_width * 32;
+	data->mlx.mlx_hei = data->map_height * 32;
+	load_textures(data);
+	load_textures_addr1(data);
+	data->mlx.mlx_win = mlx_new_window(data->mlx.mlx, data->mlx.mlx_wid, data->mlx.mlx_hei, "so_long");
+}
+
+void	draw_img(t_data *data)
+{
+	// Drawing floor
+	// Drawing map
+	// Drawing player
+	t_img mimg;
+	draw_floor(data, &mimg);
+	draw_map(data, &mimg);
+	draw_player(data, &mimg);
+	// TODO find a way to only modify the part of the img that needs to change.
+	// collectiles, player, if the player gets the collectiles and ends the game!
+	// if not then jst mv the player
+	mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
+	mlx_destroy_image(data->mlx.mlx, mimg.img);
+}
+
+int	player_movements(t_data *data)
+{
+	if (active_key(data))
+	{
+		/*
+		if (data->keys[KEY_LEFT])
+			rotate_player(data, ROT_LEFT);
+		if (data->keys[KEY_RIGHT])
+			rotate_player(data, ROT_RIGHT);
+		if (data->keys[KEY_UP] || data->keys[KEY_W])
+			move_player_ns(data, MOV_W);
+		if (data->keys[KEY_DOWN] || data->keys[KEY_S])
+			move_player_ns(data, MOV_S);
+		*/
+		if (data->keys[KEY_D])
+		{
+			write(1, "a", 1);
+			if (data->player.x < 5)
+				data->player.x++;
+		}
+		if (data->keys[KEY_A])
+		{
+			//move_player_we(data, MOV_A);
+			write(1, "a", 1);
+			if (data->player.x > 1)
+				data->player.x--;
+		}
+		draw_img(data);
+	}
+	return (OK);
 }
 
 int	main(int argc, char *argv[])
@@ -204,7 +255,14 @@ int	main(int argc, char *argv[])
 	parsing(argc, argv, data);
 	validate_map(data);
 	show_map();
-	mlx_stuff(data);
+	mlx_start(data);
+	draw_img(data);
 
+	mlx_mouse_hide(data->mlx.mlx, data->mlx.mlx_win);
+	mlx_hook(data->mlx.mlx_win, 2, 1L << 0, keypress, data);
+	mlx_hook(data->mlx.mlx_win, 3, 1L << 1, keyrelease, data);
+	//mlx_hook(data->mlx.mlx_win, 17, 1L << 17, exit_pro, data);
+	mlx_loop_hook(data->mlx.mlx, player_movements, data);
+	mlx_loop(data->mlx.mlx);
 	return (0);
 }
