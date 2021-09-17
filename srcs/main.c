@@ -56,9 +56,33 @@ void	mlx_stuff(t_data *data)
 	}
 
 	data->mlx.up_text.addr = mlx_get_data_addr(data->mlx.up_text.img, &data->mlx.up_text.bpp, &data->mlx.up_text.line_length, &data->mlx.up_text.endian);
+	char	*dst;
+	int		i = 0;
 	x = 0;
 	y = 0;
+	(void) dst;
+
+	while (i < 1024)
+	{
+		if (((unsigned int *)data->mlx.up_text.addr)[i] != 0xff000000)
+			my_mlx_pixel_put(&mimg, x, y, ((unsigned int *)data->mlx.up_text.addr)[i]);
+			//((unsigned int *)mimg.addr)[y] = ((unsigned int *)data->mlx.up_text.addr)[i];
+		i++;
+		x++;
+		//y++;
+		if (i % 32 == 0)
+		{
+			x = 0;
+			y++;
+		}
+	}
+	//void	my_mlx_pixel_put(t_img *data, int x, int y, int color)
+	//dst = data->addr + (y * data->line_length + x * (data->bpp / 8));
+	//*(unsigned int*)dst = color;
+
 	// TODO transform dis to use my pixel put!
+	//x = 0;
+	//y = 0;
 	/*
 	while (x < 1024)
 	{
@@ -73,9 +97,9 @@ void	mlx_stuff(t_data *data)
 		}
 	}
 	*/
-	//mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
+	mlx_put_image_to_window(data->mlx.mlx, data->mlx.mlx_win, mimg.img, 0, 0);
 
-	//while (1);
+	while (1);
 }
 
 int	main(int argc, char *argv[])
