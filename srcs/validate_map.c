@@ -81,6 +81,8 @@ static void	get_data_map(t_data *data)
 			{
 				data->player.x = o;
 				data->player.y = i;
+				// TODO idk if i init this here?
+				data->player.dir = 'u';
 				// erased 'P' of map after getting coords like cub3d, is dis useful???
 				data->map[i][o] = '0';
 				break;

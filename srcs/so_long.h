@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "mlx.h"
+#include "keys.h"
 #include "gnl/get_next_line.h"
 
 typedef enum		e_error
@@ -75,8 +76,9 @@ typedef struct s_check
 typedef struct s_player
 {
 	// double needed? not like c3d that needed +0.5 in coords
-	double	x;
-	double	y;
+	int		x;
+	int		y;
+	char	dir;
 }			t_player;
 
 typedef struct		s_data
@@ -86,6 +88,7 @@ typedef struct		s_data
 	int				map_width;
 	int				map_height;
 	char			**map;
+	int				keycode[280];
 	int				init;
 }					t_data;
 
