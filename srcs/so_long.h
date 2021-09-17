@@ -49,6 +49,9 @@ typedef struct		s_mlx
 	t_text_img		do_text;
 	t_text_img		le_text;
 	t_text_img		ri_text;
+	t_text_img		ex_text;
+	t_text_img		wa_text;
+	t_text_img		co_text;
 }					t_mlx;
 
 typedef struct		s_img
