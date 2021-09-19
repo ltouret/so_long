@@ -24,7 +24,8 @@ typedef enum		e_error
 	ERR_MAP_EMPTY,
 	ERR_ARG,
 	ERR_ARG_BER,
-	ERR_TEXT
+	ERR_TEXT,
+	ERR_MLX
 }					t_error;
 
 typedef struct		s_text_img
@@ -75,10 +76,11 @@ typedef struct s_check
 
 typedef struct s_player
 {
-	// double needed? not like c3d that needed +0.5 in coords
 	int		x;
 	int		y;
 	char	dir;
+	int		mov;
+	int		col;
 }			t_player;
 
 typedef struct		s_data
@@ -88,7 +90,6 @@ typedef struct		s_data
 	int				map_width;
 	int				map_height;
 	char			**map;
-	int				keys[280];
 	int				init;
 }					t_data;
 

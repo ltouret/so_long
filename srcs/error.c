@@ -30,6 +30,8 @@ void	panic(t_error err_code)
 		printf("Error : map doesnt end with '.ber'... exiting\n");
 	else if (err_code == ERR_TEXT)
 		printf("Error : textures are missing... exiting\n");
+	else if (err_code == ERR_MLX)
+		printf("Error : mlx failed... exiting\n");
 	else
 		printf("Unknown Error... exiting\n");
 	exit(ERR);

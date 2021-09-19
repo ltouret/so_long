@@ -77,13 +77,13 @@ static void	get_data_map(t_data *data)
 		o = 0;
 		while (data->map[i][o])
 		{
+			if (data->map[i][o] == 'C')
+				data->player.col++;
 			if (data->map[i][o] == 'P')
 			{
 				data->player.x = o;
 				data->player.y = i;
-				// TODO idk if i init this here?
 				data->player.dir = 'u';
-				// erased 'P' of map after getting coords like cub3d, is dis useful???
 				data->map[i][o] = '0';
 				break;
 			}
@@ -91,7 +91,6 @@ static void	get_data_map(t_data *data)
 		}
 		i++;
 	}
-	//printf("%f %f\n", data->player.y, data->player.x);
 }
 
 static void	check_map_closed(t_data *data)
