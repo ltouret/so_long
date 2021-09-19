@@ -30,15 +30,13 @@ typedef enum		e_error
 
 typedef struct		s_text_img
 {
-	// im even using dis bs? look n erase
-	// just changed int *addr to char *addr is dis good?
 	int				wid;
 	int				hei;
+	void			*img;
+	char			*addr;
 	int				bpp;
 	int				line_length;
 	int				endian;
-	void			*img;
-	char			*addr;
 }					t_text_img;
 
 typedef struct		s_mlx

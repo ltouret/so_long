@@ -231,6 +231,15 @@ int	keypress(int key, t_data *data)
 	{
 		// call exit esc key pressed
 		// TODO create exit func and free stufF!
+		mlx_destroy_image(data->mlx.mlx, data->mlx.up_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.do_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.le_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.ri_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.wa_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.ex_text.img);
+		mlx_destroy_image(data->mlx.mlx, data->mlx.co_text.img);
+		mlx_destroy_window(data->mlx.mlx, data->mlx.mlx_win);
+		// call free map!
 		panic(-1);
 	}
 	if (key == KEY_W)
