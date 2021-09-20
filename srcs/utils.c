@@ -1,4 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/20 02:53:25 by ltouret           #+#    #+#             */
+/*   Updated: 2021/09/20 03:04:53 by ltouret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "so_long.h"
+
+int	clean_exit(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	mlx_destroy_image(data->mlx.mlx, data->mlx.up_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.do_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.le_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.ri_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.wa_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.ex_text.img);
+	mlx_destroy_image(data->mlx.mlx, data->mlx.co_text.img);
+	mlx_destroy_window(data->mlx.mlx, data->mlx.mlx_win);
+	mlx_destroy_display(data->mlx.mlx);
+	while (data->map[i])
+	{
+		free(data->map[i]);
+		i++;
+	}
+	free(data->map);
+	exit(0);
+	return (OK);
+}
 
 void	ft_bzero(void *s, size_t n)
 {
@@ -24,24 +60,9 @@ t_data	*get_data(void)
 	return (&data);
 }
 
-//deprecated erase after being done
-void	show_map(void)
-{
-	int		i;
-	char	**map;
-
-	i = 0;
-	map = get_data()->map;
-	while (map != NULL && map[i])
-	{
-		printf("%s\n", map[i]);
-		i++;
-	}
-}
-
 void	*mymalloc(size_t size)
 {
-	void *out;
+	void	*out;
 
 	out = malloc(size);
 	if (out == NULL)

@@ -1,29 +1,52 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   validate_map.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/20 02:45:43 by ltouret           #+#    #+#             */
+/*   Updated: 2021/09/20 03:14:59 by ltouret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "so_long.h"
 
-// check if this is still needed after breaking check_map in funcs
-static t_check	*get_check(void)
+static void	check_map1(t_data *data, t_check *check, int i)
 {
-	// stop using this, just create check in check map and then bye
-	static t_check	check;
+	int	o;
 
-	//memset(&check, '\0', sizeof(t_check));
-	return (&check);
+	o = 0;
+	while (data->map[i][o])
+	{
+		if (data->map[i][o] == '0' || data->map[i][o] == '1'
+			|| data->map[i][o] == 'C' || data->map[i][o] == 'E'
+			|| data->map[i][o] == 'P')
+		{
+			if (data->map[i][o] == 'P')
+			{
+				if (check->player == 1)
+					panic(ERR_MAP_MANY_PLAY);
+				check->player = 1;
+			}
+			if (data->map[i][o] == 'E')
+				check->exit = 1;
+			if (data->map[i][o] == 'C')
+				check->collec = 1;
+		}
+		else
+			panic(ERR_MAP_WCHAR);
+		o++;
+	}
 }
 
-//  TODO create player object with coordinates
-//  TODO check if map rectangular
-// init check!
-// cut in more than 1 func
-// test for more randon rectangle errors
 static void	check_map(t_data *data)
 {
 	int		i;
-	int		o;
-	t_check	*check;
+	t_check	check;
 
 	i = 0;
-	check = get_check();
-	ft_bzero(check, sizeof(t_check));
+	ft_bzero(&check, sizeof(t_check));
 	data->map_width = ft_strlen(data->map[0]);
 	if (data->map_width < 3 || data->map_height < 3)
 		panic(ERR_MAP_RECT);
@@ -31,41 +54,19 @@ static void	check_map(t_data *data)
 		panic(ERR_MAP_RECT);
 	while (data->map[i])
 	{
-		o = 0;
+		check_map1(data, &check, i);
 		if (data->map_width != ft_strlen(data->map[i]))
 			panic(ERR_MAP_RECT);
-		while (data->map[i][o])
-		{
-			if (data->map[i][o] == '0' || data->map[i][o] == '1' || data->map[i][o] == 'C'
-				|| data->map[i][o] == 'E' || data->map[i][o] == 'P')
-			{
-				if (data->map[i][o] == 'P')
-				{
-					if (check->player == 1)
-						panic(ERR_MAP_MANY_PLAY);
-					check->player = 1;
-				}
-				if (data->map[i][o] == 'E')
-					check->exit = 1;
-				if (data->map[i][o] == 'C')
-					check->collec = 1;
-			}
-			else
-				panic(ERR_MAP_WCHAR);
-			o++;
-		}
 		i++;
 	}
-	if (check->player == 0)
+	if (check.player == 0)
 		panic(ERR_MAP_NO_PLAY);
-	if (check->collec == 0)
+	if (check.collec == 0)
 		panic(ERR_MAP_COLL);
-	if (check->exit == 0)
+	if (check.exit == 0)
 		panic(ERR_MAP_EXIT);
 }
 
-// TODO change func name, this gets player coords into player struct only, for now
-// maybe just put it into parsing directly
 static void	get_data_map(t_data *data)
 {
 	int	i;
@@ -85,7 +86,6 @@ static void	get_data_map(t_data *data)
 				data->player.y = i;
 				data->player.dir = 'u';
 				data->map[i][o] = '0';
-				break;
 			}
 			o++;
 		}

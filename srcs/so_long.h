@@ -1,14 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/20 02:37:50 by ltouret           #+#    #+#             */
+/*   Updated: 2021/09/20 03:17:20 by ltouret          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include "mlx.h"
-#include "keys.h"
-#include "gnl/get_next_line.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include "mlx.h"
+# include "keys.h"
+# include "gnl/get_next_line.h"
 
-typedef enum		e_error
+typedef enum e_error
 {
 	ERR = -1,
 	OK = 0,
@@ -28,7 +40,7 @@ typedef enum		e_error
 	ERR_MLX
 }					t_error;
 
-typedef struct		s_text_img
+typedef struct s_text_img
 {
 	int				wid;
 	int				hei;
@@ -39,7 +51,7 @@ typedef struct		s_text_img
 	int				endian;
 }					t_text_img;
 
-typedef struct		s_mlx
+typedef struct s_mlx
 {
 	void			*mlx;
 	void			*mlx_win;
@@ -54,10 +66,8 @@ typedef struct		s_mlx
 	t_text_img		co_text;
 }					t_mlx;
 
-typedef struct		s_img
+typedef struct s_img
 {
-	// im even using dis bs? look n erase
-	// same as b4 do i use int or char for addr?
 	void			*img;
 	char			*addr;
 	int				bpp;
@@ -70,7 +80,7 @@ typedef struct s_check
 	int		player;
 	int		exit;
 	int		collec;
-}			t_check;
+}					t_check;
 
 typedef struct s_player
 {
@@ -79,9 +89,9 @@ typedef struct s_player
 	char	dir;
 	int		mov;
 	int		col;
-}			t_player;
+}					t_player;
 
-typedef struct		s_data
+typedef struct s_data
 {
 	t_mlx			mlx;
 	t_player		player;
@@ -100,6 +110,12 @@ void	ft_bzero(void *s, size_t n);
 void	*mymalloc(size_t size);
 char	*ft_strdup(char *str);
 t_data	*get_data(void);
-void	show_map(void);
+// mlx
+int		keypress(int key, t_data *data);
+void	mlx_start(t_data *data);
+void	draw_img(t_data *data);
+void	my_mlx_pixel_put(t_img *mimg, int x, int y, int color);
+void	img_screen(t_text_img *img, t_img *mimg, int x, int y);
+int		clean_exit(t_data *data);
 
 #endif

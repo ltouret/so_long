@@ -6,13 +6,15 @@
 #    By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/20 13:00:20 by ltouret           #+#    #+#              #
-#    Updated: 2021/09/15 01:04:44 by ltouret          ###   ########.fr        #
+#    Updated: 2021/09/20 03:03:48 by ltouret          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = so_long
 
-SRCS = srcs/main.c srcs/parsing.c srcs/validate_map.c srcs/utils.c srcs/error.c\
+SRCS = srcs/main.c srcs/parsing.c srcs/validate_map.c srcs/utils.c \
+	srcs/error.c srcs/keypress.c srcs/draw_img.c srcs/mlx_start.c \
+	srcs/img_screen.c \
 	srcs/gnl/get_next_line.c srcs/gnl/get_next_line_utils.c
 
 OBJS = ${SRCS:.c=.o}
