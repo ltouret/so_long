@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:53:38 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 02:53:40 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/09/21 02:39:14 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void	check_args(int argc, char *argv[])
 {
 	if (argc != 2)
 		panic(ERR_ARG);
-	if (argv[1][0] == '\0')
+	if (argv[1] == NULL || argv[1][0] == '\0')
 		panic(ERR_ARG);
 	check_ber(argv[1]);
 }
