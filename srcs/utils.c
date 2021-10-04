@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:53:25 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 03:04:53 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/05 00:59:11 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	clean_exit(t_data *data)
 {
 	int	i;
 
-	i = 0;
 	mlx_destroy_image(data->mlx.mlx, data->mlx.up_text.img);
 	mlx_destroy_image(data->mlx.mlx, data->mlx.do_text.img);
 	mlx_destroy_image(data->mlx.mlx, data->mlx.le_text.img);
@@ -26,6 +25,8 @@ int	clean_exit(t_data *data)
 	mlx_destroy_image(data->mlx.mlx, data->mlx.co_text.img);
 	mlx_destroy_window(data->mlx.mlx, data->mlx.mlx_win);
 	mlx_destroy_display(data->mlx.mlx);
+	free(data->mlx.mlx);
+	i = 0;
 	while (data->map[i])
 	{
 		free(data->map[i]);
