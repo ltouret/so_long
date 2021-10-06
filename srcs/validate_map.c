@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:45:43 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 03:14:59 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 17:59:22 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,10 @@ static void	check_map(t_data *data)
 	i = 0;
 	ft_bzero(&check, sizeof(t_check));
 	data->map_width = ft_strlen(data->map[0]);
-	if (data->map_width < 3 || data->map_height < 3)
-		panic(ERR_MAP_RECT);
-	if (data->map_width == data->map_height)
-		panic(ERR_MAP_RECT);
 	while (data->map[i])
 	{
+		if (data->map[i][0] == '\0')
+			panic(ERR_MAP_WCHAR);
 		check_map1(data, &check, i);
 		if (data->map_width != ft_strlen(data->map[i]))
 			panic(ERR_MAP_RECT);

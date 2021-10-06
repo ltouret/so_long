@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:37:12 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 02:43:55 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 18:05:22 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ static void	panic2(t_error err_code)
 		printf("Error : mlx failed... exiting\n");
 	else
 		printf("Unknown Error... exiting\n");
-	exit(ERR);
 }
 
 void	panic(t_error err_code)
