@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:53:38 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/21 02:39:14 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 19:26:44 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ static void	check_ber(char *filename)
 	int	len;
 
 	len = ft_strlen(filename);
+	if (len < 4)
+		panic(ERR_ARG_BER);
 	if (filename[len - 1] != 'r')
 		panic(ERR_ARG_BER);
 	if (filename[len - 2] != 'e')

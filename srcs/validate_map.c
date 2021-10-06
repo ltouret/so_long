@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:45:43 by ltouret           #+#    #+#             */
-/*   Updated: 2021/10/06 17:59:22 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 20:44:39 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	check_map1(t_data *data, t_check *check, int i)
 			if (data->map[i][o] == 'P')
 			{
 				if (check->player == 1)
-					panic(ERR_MAP_MANY_PLAY);
+					panic_map(data, ERR_MAP_MANY_PLAY);
 				check->player = 1;
 			}
 			if (data->map[i][o] == 'E')
@@ -35,7 +35,7 @@ static void	check_map1(t_data *data, t_check *check, int i)
 				check->collec = 1;
 		}
 		else
-			panic(ERR_MAP_WCHAR);
+			panic_map(data, ERR_MAP_WCHAR);
 		o++;
 	}
 }
@@ -51,18 +51,18 @@ static void	check_map(t_data *data)
 	while (data->map[i])
 	{
 		if (data->map[i][0] == '\0')
-			panic(ERR_MAP_WCHAR);
+			panic_map(data, ERR_MAP_WCHAR);
 		check_map1(data, &check, i);
 		if (data->map_width != ft_strlen(data->map[i]))
-			panic(ERR_MAP_RECT);
+			panic_map(data, ERR_MAP_RECT);
 		i++;
 	}
 	if (check.player == 0)
-		panic(ERR_MAP_NO_PLAY);
+		panic_map(data, ERR_MAP_NO_PLAY);
 	if (check.collec == 0)
-		panic(ERR_MAP_COLL);
+		panic_map(data, ERR_MAP_COLL);
 	if (check.exit == 0)
-		panic(ERR_MAP_EXIT);
+		panic_map(data, ERR_MAP_EXIT);
 }
 
 static void	get_data_map(t_data *data)
@@ -106,7 +106,7 @@ static void	check_map_closed(t_data *data)
 				|| (o == 0 || o == data->map_width - 1))
 			{
 				if (data->map[i][o] != '1')
-					panic(ERR_MAP_OPEN);
+					panic_map(data, ERR_MAP_OPEN);
 			}
 			o++;
 		}

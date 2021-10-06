@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:50:33 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 03:08:06 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 21:18:08 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	mlx_start(t_data *data)
 {
 	data->mlx.mlx = mlx_init();
 	if (data->mlx.mlx == NULL)
-		panic(ERR_MLX);
+		panic_map(data, ERR_MLX);
 	data->mlx.mlx_wid = data->map_width * 32;
 	data->mlx.mlx_hei = data->map_height * 32;
 	load_textures(data);

@@ -6,7 +6,7 @@
 /*   By: ltouret <ltouret@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 02:37:50 by ltouret           #+#    #+#             */
-/*   Updated: 2021/09/20 03:17:20 by ltouret          ###   ########.fr       */
+/*   Updated: 2021/10/06 20:46:47 by ltouret          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	validate_map(t_data *data);
 void	parsing(int argc, char *argv[], t_data *data);
 // errors
 void	panic(t_error err_code);
+void	panic_map(t_data *data, t_error err_code);
 // utils
 void	ft_bzero(void *s, size_t n);
 void	*mymalloc(size_t size);
